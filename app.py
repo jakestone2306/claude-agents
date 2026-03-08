@@ -1,20 +1,20 @@
 import os
-from flask import Flask, request, jsonify
-from pipeline_risk_agent import run
+from flask import Flask, jsonify
+from pipeline_agent import run
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "agent": "Pipeline Risk Agent"})
+    return jsonify({"status": "ok", "agent": "pipeline-health-agent"})
 
 @app.route("/run", methods=["POST"])
 def run_agent():
     try:
-        run()
-        return jsonify({"status": "success", "message": "Pipeline risk analysis complete"})
+        result = run()
+        return jsonify({"status": "success", "result": result})
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
