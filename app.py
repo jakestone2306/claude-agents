@@ -1,20 +1,20 @@
 import os
 from flask import Flask, request, jsonify
-from main import run_agent
+from pipeline_risk_agent import run
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "message": "Claude Agent is running!"})
+    return jsonify({"status": "ok", "agent": "Pipeline Risk Agent"})
 
 @app.route("/run", methods=["POST"])
-def run():
-    data = request.get_json()
-    if not data or "message" not in data:
-        return jsonify({"error": "Missing 'message' in request body"}), 400
-    result = run_agent(data["message"])
-    return jsonify({"response": result})
+def run_agent():
+    try:
+        run()
+        return jsonify({"status": "success", "message": "Pipeline risk analysis complete"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
